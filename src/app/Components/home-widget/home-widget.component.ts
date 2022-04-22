@@ -10,6 +10,7 @@ import { interval, Observable } from 'rxjs';
   styleUrls: ['./home-widget.component.scss'],
 })
 export class HomeWidgetComponent implements OnInit {
+  public location: any = 'Montpellier';
   weatherData: any;
   pipe = new DatePipe('en-US');
   todayDate: any;
@@ -47,10 +48,10 @@ export class HomeWidgetComponent implements OnInit {
   // });
 
   constructor(public httpClient: HttpClient) {
-    this.getWeatherData('q=Montpellier');
+    this.getWeatherData(`q=${this.location}`);
     this.todayDate = this.pipe.transform(Date.now(), 'dd, MMM yyyy, HH:mm');
     setInterval(() => {
-      this.getWeatherData('q=Montpellier');
+      this.getWeatherData(`q=${this.location}`);
       this.todayDate = this.pipe.transform(Date.now(), 'dd, MMM yyyy, HH:mm');
     }, 1000 * 60 * 2);
   }
@@ -70,7 +71,8 @@ export class HomeWidgetComponent implements OnInit {
     let photoDayTime = isDay ? 'day' : 'night';
 
     fetch(
-      environment.UNSPLASH_API_URL + `random/?${parameter},${photoDayTime},city`
+      environment.UNSPLASH_API_URL +
+        `random/?${parameter},${photoDayTime},beach`
     ).then((response) => {
       var container = document.getElementById('background_image-container');
       container!.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, .5),rgba(0, 0, 0, 0.2) 30%,rgba(0, 0, 0, 0.2) 70%,rgba(0, 0, 0, .8)) , url(${response.url}) `;
@@ -82,7 +84,7 @@ export class HomeWidgetComponent implements OnInit {
   }
 
   get TemperatureCelsius() {
-    return Math.round(this.weatherData.main.feels_like - 273.15);
+    return Math.round(this.weatherData?.main.feels_like - 273.15);
   }
 
   success(position: any): any {
@@ -124,7 +126,6 @@ export class HomeWidgetComponent implements OnInit {
       )
       .subscribe((results) => {
         this.weatherData.hourly = results;
-        console.log(this.weatherData.hourly.hourly[0]);
       });
   }
   openDrawer() {
@@ -150,6 +151,26 @@ export class HomeWidgetComponent implements OnInit {
         '80vh';
     }
     this.isBottomBarOpen = !this.isBottomBarOpen;
+  }
+  openSearchbar() {
+    document.getElementById('searchBar')!.style.height = '10vh';
+    document.getElementById('background_image-container')!.style.height =
+      '90vh';
+    document.getElementById('searchCityInput')?.focus();
+    this.closeDrawer();
+    document.getElementById('bottombar-btn')!.style.transform = 'rotateZ(0deg)';
+
+    document.getElementById('bottomPanel')!.style.height = '0';
+    this.isBottomBarOpen = false;
+  }
+  closeSearchbar() {
+    document.getElementById('searchBar')!.style.height = '0';
+    document.getElementById('background_image-container')!.style.height =
+      '100vh';
+  }
+  setCity() {
+    console.log(this.location);
+    this.getWeatherData(`q=${this.location}`);
   }
 }
 
