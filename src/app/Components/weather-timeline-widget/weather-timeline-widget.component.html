@@ -1,0 +1,14 @@
+<!-- Card -->
+<article class="card">
+  <div
+    id="weatherIcon"
+    [ngStyle]="{ 'background-image': renderWeatherIcon() }"
+  ></div>
+  <div class="info">
+    <!-- <p class="body2" id="weatherDescription">
+      {{ value.weather[0].description }}
+    </p> -->
+    <p class="caption" id="weatherHour">{{ getHumanTime(value.dt) }}</p>
+    <h6 id="weatherTemp">{{ getTemperatureCelsius(value.feels_like) }}°</h6>
+  </div>
+</article>

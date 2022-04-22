@@ -1,0 +1,79 @@
+<main id="background_image-container">
+  <section id="sidebar" class="sidebar">
+    <span class="material-icons-outlined close" (click)="closeDrawer()">
+      close
+    </span>
+    <div class="content">
+      <h6>Weather Details</h6>
+
+      <p class="body2">
+        <span>Humidity:</span><span>{{ weatherData.main.humidity }} %</span>
+      </p>
+      <p class="body2">
+        <span>Pressure:</span><span>{{ weatherData.main.pressure }}hPa</span>
+      </p>
+      <p class="body2">
+        <span>Sunrise:</span
+        ><span>{{ getHumanTime(weatherData.sys.sunrise) }}</span>
+      </p>
+      <p class="body2">
+        <span>Sunset:</span
+        ><span>{{ getHumanTime(weatherData.sys.sunset) }}</span>
+      </p>
+      <p class="body2">
+        <span>Wind Direction: </span>
+        <span>{{ getWindDirection(weatherData.wind.deg) }}</span>
+      </p>
+
+      <p class="body2">
+        <span>Wind Speed: </span><span> {{ weatherData.wind.speed }} m/s</span>
+      </p>
+    </div>
+  </section>
+  <section class="current_info">
+    <div class="left">
+      <p id="todayDate" class="body2">{{ todayDate }}</p>
+      <div class="city">
+        <span class="material-icons"> place </span>
+        <p id="place" *ngIf="weatherData.name != null">
+          {{ weatherData.name }}
+        </p>
+      </div>
+    </div>
+    <div class="right" (click)="openDrawer()">
+      <div></div>
+      <div></div>
+    </div>
+  </section>
+  <div class="center">
+    <div class="info">
+      <div id="logo"></div>
+      <p
+        id="weatherDescription"
+        *ngIf="weatherData.weather[0].description"
+        class="subtitle1"
+      >
+        {{ weatherData.weather[0].description }}
+      </p>
+      <h1 *ngIf="TemperatureCelsius" id="temp">{{ TemperatureCelsius }}°</h1>
+    </div>
+  </div>
+  <div class="more-info">
+    <span
+      id="bottombar-btn"
+      class="material-icons-outlined"
+      (click)="weatherTimelinePanel()"
+    >
+      expand_less
+    </span>
+  </div>
+</main>
+<section id="bottomPanel" class="bottomPanel">
+  <p class="body2">Today</p>
+  <div class="content">
+    <app-weather-timeline-widget
+      *ngFor="let hour of weatherData.hourly.hourly"
+      [value]="hour"
+    ></app-weather-timeline-widget>
+  </div>
+</section>
