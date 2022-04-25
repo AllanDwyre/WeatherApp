@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { environment } from './../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { DatePipe } from '@angular/common';
-// import { interval, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-home-widget',
@@ -11,6 +10,8 @@ import { DatePipe } from '@angular/common';
 })
 export class HomeWidgetComponent implements OnInit {
   public location: any = 'Montpellier';
+  public searchBarInput: any = '';
+
   weatherData: any;
   pipe = new DatePipe('en-US');
   todayDate: any;
@@ -53,30 +54,32 @@ export class HomeWidgetComponent implements OnInit {
     setInterval(() => {
       this.getWeatherData(`q=${this.location}`);
       this.todayDate = this.pipe.transform(Date.now(), 'dd, MMM yyyy, HH:mm');
-    }, 1000 * 60 * 2);
+    }, 1000 * 60 * 10);
   }
 
   ngOnInit(): void {}
+  onSubmit() {
+    if (this.searchBarInput == '' || this.searchBarInput == null) return;
+
+    this.location = this.searchBarInput;
+    this.searchBarInput = '';
+    this.closeSearchbar();
+    this.getWeatherData(`q=${this.location}`);
+  }
 
   renderBackgroundImage() {
     let parameter = this.weatherData.weather[0].description
       .split(' ')
       .join('%20');
 
-    let currentTime = new Date(this.weatherData.dt * 1000);
-    let sunset = new Date(this.weatherData.sys.sunset * 1000);
-    let sunrise = new Date(this.weatherData.sys.sunrise * 1000);
-
-    let isDay: boolean = currentTime < sunset && currentTime > sunrise;
-    let photoDayTime = isDay ? 'day' : 'night';
-
-    fetch(
-      environment.UNSPLASH_API_URL +
-        `random/?${parameter},${photoDayTime},beach`
-    ).then((response) => {
-      var container = document.getElementById('background_image-container');
-      container!.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, .5),rgba(0, 0, 0, 0.2) 30%,rgba(0, 0, 0, 0.2) 70%,rgba(0, 0, 0, .8)) , url(${response.url}) `;
-    });
+    var themes = ['beach', 'city', 'productivity', 'rural'];
+    var theme = themes[Math.floor(Math.random() * themes.length)];
+    fetch(environment.UNSPLASH_API_URL + `random/?${parameter},${theme}`).then(
+      (response) => {
+        var container = document.getElementById('background_image-container');
+        container!.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, .5),rgba(0, 0, 0, 0.2) 30%,rgba(0, 0, 0, 0.2) 70%,rgba(0, 0, 0, .8)) , url(${response.url}) `;
+      }
+    );
   }
   renderWeatherIcon(weatherIcon: string) {
     var container = document.getElementById('logo');
@@ -114,6 +117,12 @@ export class HomeWidgetComponent implements OnInit {
       .subscribe((results) => {
         console.log(results);
         this.weatherData = results;
+
+        this.todayDate = this.pipe.transform(
+          new Date(this.weatherData.dt * 1000),
+          'dd, MMM yyyy, HH:mm'
+          // this.weatherData.timezone.toString()
+        );
         this.renderBackgroundImage();
         this.renderWeatherIcon(this.weatherData.weather[0].icon);
         this.getWeatherHistoricalData(this.weatherData.coord);
@@ -154,6 +163,8 @@ export class HomeWidgetComponent implements OnInit {
   }
   openSearchbar() {
     document.getElementById('searchBar')!.style.height = '10vh';
+    document.getElementById('searchBar')!.style.opacity = '1';
+
     document.getElementById('background_image-container')!.style.height =
       '90vh';
     document.getElementById('searchCityInput')?.focus();
@@ -161,16 +172,14 @@ export class HomeWidgetComponent implements OnInit {
     document.getElementById('bottombar-btn')!.style.transform = 'rotateZ(0deg)';
 
     document.getElementById('bottomPanel')!.style.height = '0';
+
     this.isBottomBarOpen = false;
   }
   closeSearchbar() {
     document.getElementById('searchBar')!.style.height = '0';
+    document.getElementById('searchBar')!.style.opacity = '0';
     document.getElementById('background_image-container')!.style.height =
       '100vh';
-  }
-  setCity() {
-    console.log(this.location);
-    this.getWeatherData(`q=${this.location}`);
   }
 }
 

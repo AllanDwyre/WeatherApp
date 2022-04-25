@@ -1,14 +1,15 @@
 <section id="searchBar" class="searchCity">
-  <form>
+  <form (submit)="onSubmit()">
     <input
       id="searchCityInput"
       (blur)="closeSearchbar()"
+      [(ngModel)]="searchBarInput"
+      [ngModelOptions]="{ standalone: true }"
+      value=""
       type="search"
       placeholder="Search a place"
     />
-    <button type="submit" class="material-icons" (click)="setCity()">
-      search
-    </button>
+    <button type="submit" class="material-icons">search</button>
   </form>
 </section>
 <main id="background_image-container">
