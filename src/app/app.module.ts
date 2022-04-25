@@ -6,6 +6,8 @@ import { AppComponent } from './app.component';
 import { HomeWidgetComponent } from './Components/home-widget/home-widget.component';
 import { WeatherTimelineWidgetComponent } from './Components/weather-timeline-widget/weather-timeline-widget.component';
 import { HttpClientModule } from '@angular/common/http';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
 
 @NgModule({
   declarations: [
@@ -13,7 +15,12 @@ import { HttpClientModule } from '@angular/common/http';
     HomeWidgetComponent,
     WeatherTimelineWidgetComponent,
   ],
-  imports: [BrowserModule, AppRoutingModule, HttpClientModule],
+  imports: [BrowserModule, AppRoutingModule, HttpClientModule, ServiceWorkerModule.register('ngsw-worker.js', {
+  enabled: environment.production,
+  // Register the ServiceWorker as soon as the application is stable
+  // or after 30 seconds (whichever comes first).
+  registrationStrategy: 'registerWhenStable:30000'
+})],
   providers: [],
   bootstrap: [AppComponent],
 })

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { environment } from './../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { DatePipe } from '@angular/common';
-import { interval, Observable } from 'rxjs';
+// import { interval, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-home-widget',
