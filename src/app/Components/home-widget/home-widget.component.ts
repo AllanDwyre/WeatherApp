@@ -56,8 +56,8 @@ export class HomeWidgetComponent implements OnInit {
       this.todayDate = this.pipe.transform(Date.now(), 'dd, MMM yyyy, HH:mm');
     }, 1000 * 60 * 10);
   }
-
   ngOnInit(): void {}
+
   onSubmit() {
     if (this.searchBarInput == '' || this.searchBarInput == null) return;
 
@@ -67,47 +67,6 @@ export class HomeWidgetComponent implements OnInit {
     this.getWeatherData(`q=${this.location}`);
   }
 
-  renderBackgroundImage() {
-    let parameter = this.weatherData.weather[0].description
-      .split(' ')
-      .join('%20');
-
-    var themes = ['beach', 'city', 'productivity', 'rural'];
-    var theme = themes[Math.floor(Math.random() * themes.length)];
-    fetch(environment.UNSPLASH_API_URL + `random/?${parameter},${theme}`).then(
-      (response) => {
-        var container = document.getElementById('background_image-container');
-        container!.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, .5),rgba(0, 0, 0, 0.2) 30%,rgba(0, 0, 0, 0.2) 70%,rgba(0, 0, 0, .8)) , url(${response.url}) `;
-      }
-    );
-  }
-  renderWeatherIcon(weatherIcon: string) {
-    var container = document.getElementById('logo');
-    container!.style.backgroundImage = `url(http://openweathermap.org/img/wn/${weatherIcon}@2x.png)`;
-  }
-
-  get TemperatureCelsius() {
-    return Math.round(this.weatherData?.main.feels_like - 273.15);
-  }
-
-  success(position: any): any {
-    // let lat = Math.round(position.coords.latitude);
-    // let long = Math.round(position.coords.longitude);
-
-    this.coords = position.coords;
-  }
-  error() {
-    this.getWeatherData('q=Paris');
-  }
-
-  getHumanTime(utc: number) {
-    return this.pipe.transform(new Date(utc * 1000), 'HH:mm');
-  }
-  getWindDirection(direction: number): string {
-    var val = Math.round(direction / 45 + 0.5);
-    var arr = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
-    return arr[val % 8];
-  }
   getWeatherData(position: string) {
     this.httpClient
       .get(
@@ -137,6 +96,47 @@ export class HomeWidgetComponent implements OnInit {
         this.weatherData.hourly = results;
       });
   }
+
+  renderBackgroundImage() {
+    let parameter = this.weatherData.weather[0].description
+      .split(' ')
+      .join('%20');
+
+    var themes = ['beach', 'city', 'productivity', 'rural'];
+    var theme = themes[Math.floor(Math.random() * themes.length)];
+    fetch(environment.UNSPLASH_API_URL + `random/?${parameter},${theme}`).then(
+      (response) => {
+        var container = document.getElementById('background_image-container');
+        container!.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, .5),rgba(0, 0, 0, 0.2) 30%,rgba(0, 0, 0, 0.2) 70%,rgba(0, 0, 0, .8)) , url(${response.url}) `;
+      }
+    );
+  }
+  renderWeatherIcon(weatherIcon: string) {
+    var container = document.getElementById('logo');
+    container!.style.backgroundImage = `url(http://openweathermap.org/img/wn/${weatherIcon}@2x.png)`;
+  }
+  get TemperatureCelsius() {
+    return Math.round(this.weatherData?.main.feels_like - 273.15);
+  }
+  getHumanTime(utc: number) {
+    return this.pipe.transform(new Date(utc * 1000), 'HH:mm');
+  }
+  getWindDirection(direction: number): string {
+    var val = Math.round(direction / 45 + 0.5);
+    var arr = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+    return arr[val % 8];
+  }
+
+  success(position: any): any {
+    // let lat = Math.round(position.coords.latitude);
+    // let long = Math.round(position.coords.longitude);
+
+    this.coords = position.coords;
+  }
+  error() {
+    this.getWeatherData('q=Paris');
+  }
+
   openDrawer() {
     document.getElementById('sidebar')!.style.width = '250px';
   }
